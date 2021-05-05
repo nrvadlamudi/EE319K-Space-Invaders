@@ -461,18 +461,18 @@ while(1){ // Entire Program
 		SSD1306_OutBuffer();
 		SSD1306_OutClear();
 		SSD1306_SetCursor(0,0);
-		if(mylanguage == 0){	SSD1306_OutString("Game Over!");}
+		if(mylanguagesetting == 0){	SSD1306_OutString("Game Over!");}
 		else{	SSD1306_OutString("Jeu Termine!");}
 		SSD1306_SetCursor(0,1);
-		if(mylanguage == 0){	SSD1306_OutString("Your score:");}
+		if(mylanguagesetting == 0){	SSD1306_OutString("Your score:");}
 		else{	SSD1306_OutString("Tes Marque des points:");}
 	  SSD1306_SetCursor(11,1);
 		SSD1306_OutUDec(score);
 		SSD1306_SetCursor(0,3);
-		if(mylanguage == 0){SSD1306_OutString("Press Fire to:");}
+		if(mylanguagesetting == 0){SSD1306_OutString("Press Fire to:");}
 		else{SSD1306_OutString("Appuyez sur le bouton de tir:");}
 	  SSD1306_SetCursor(0,4);
-	   if(mylanguage == 0){SSD1306_OutString("Play Again!");}
+	   if(mylanguagesetting == 0){SSD1306_OutString("Play Again!");}
 		else{SSD1306_OutString("Jouer de nouveau!");}
 	  score = 0;
 	
