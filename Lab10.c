@@ -95,6 +95,7 @@ void Profile_Init(void){
 volatile uint8_t SW1,SW2;
 void Delay100ms(uint32_t count); // time delay in 0.1 seconds
 uint32_t random;
+ uint32_t rand2;
 uint16_t score = 0;
 typedef enum {dead,alive} status_t; // Sets 0 to dead status and 1 to alive status
 int8_t lives = 3; // 3 lives for player
@@ -390,11 +391,10 @@ while(1){ // Entire Program
 			}
 		}
 		random = Random();
-			 int rand2 = 0;
 		if(random < MaxEnemies){ // generate enemy laser if random number generated an enemy designation
 			if(Enemies[random].life == alive){
 			ReturnFire(random);
-				 rand2 = rand() % 3 + 1;
+				 rand2 = Random() % 3 + 1;
 				if(rand2 == 1){Sound_Invader1();}
 				if(rand2 == 2){Sound_Invader2();}
 				if(rand2 == 3){Sound_Invader3();}
