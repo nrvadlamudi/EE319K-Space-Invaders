@@ -302,6 +302,7 @@ void ReturnFire (uint32_t enemy){int i; int count = 0;
 		eLasers[enemy].life = alive;
 		eLasers[enemy].x = Enemies[enemy].x + 6;
 		eLasers[enemy].y = Enemies[enemy].y + 4;
+		
 	}
 }
 
@@ -364,6 +365,7 @@ int main(void){
 	ADC_Init(5);
 	Button_Init();
 	SysTick_Init(4000000); // 20 Hz Interrupt
+	Sound_Init();
   Random_Init(42);
   Profile_Init(); // PB5,PB4,PF3,PF2,PF1 
   SSD1306_ClearBuffer();
@@ -384,12 +386,20 @@ while(1){ // Entire Program
 			if(shot == 1){ // light blast LED
 				shot = 0;
 				PB4 ^= 0x10;
+				
 			}
 		}
 		random = Random();
+			 int rand2 = 0;
 		if(random < MaxEnemies){ // generate enemy laser if random number generated an enemy designation
 			if(Enemies[random].life == alive){
 			ReturnFire(random);
+				 rand2 = rand() % 3 + 1;
+				if(rand2 == 1){Sound_Invader1();}
+				if(rand2 == 2){Sound_Invader2();}
+				if(rand2 == 3){Sound_Invader3();}
+				
+				
 			}
 		}
 		if(SW1 == 1){ // If the fire button is pressed
@@ -397,9 +407,11 @@ while(1){ // Entire Program
 			PB4 ^= 0x10; // Flash LED
 			shot = 1;
 			CreateMissile();
+			Sound_Shoot();
 		}
 		if(SW2 == 1){ // If pause button is pressed
 			SW2 = 0;
+			Sound_HighPitch();
 			SSD1306_OutString("Game Paused");
 			PB5 ^= 0x20;
 			while(SW2 == 0){NVIC_ST_CTRL_R=0;}
@@ -411,6 +423,8 @@ while(1){ // Entire Program
 		for(i=0;i<MaxEnemies;i++){
 			if(Enemies[i].life == dead){
 				count++;
+				Sound_Killed();
+				Sound_Explosion();
 			}
 		}
 		
@@ -424,6 +438,7 @@ while(1){ // Entire Program
 		
 	// Game Over Screen
 		NVIC_ST_CTRL_R = 0;
+		Sound_Explosion();
 		SSD1306_ClearBuffer();
 		SSD1306_OutBuffer();
 		SSD1306_OutClear();
@@ -470,4 +485,5 @@ void SysTick_Init(uint32_t period){
 
 void SysTick_Handler(void){
 	Move();
+	
 }
