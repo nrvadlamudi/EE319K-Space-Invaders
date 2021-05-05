@@ -96,6 +96,7 @@ volatile uint8_t SW1,SW2;
 void Delay100ms(uint32_t count); // time delay in 0.1 seconds
 uint32_t random;
  uint32_t rand2;
+uint8_t mylanguagesetting;
 uint16_t score = 0;
 typedef enum {dead,alive} status_t; // Sets 0 to dead status and 1 to alive status
 int8_t lives = 3; // 3 lives for player
@@ -370,15 +371,29 @@ int main(void){
   Random_Init(42);
   Profile_Init(); // PB5,PB4,PF3,PF2,PF1 
   SSD1306_ClearBuffer();
-  SSD1306_DrawBMP(2, 62, SpaceInvadersMarquee, 0, SSD1306_WHITE);
-  SSD1306_OutBuffer();
+  //SSD1306_DrawBMP(2, 62, SpaceInvadersMarquee, 0, SSD1306_WHITE);
+ // SSD1306_OutBuffer();
   EnableInterrupts();
-	while(SW1 == 0){} // while shoot button is not pressed
-
+	
+	SSD1306_SetCursor(0,0);
+	SSD1306_OutString(" SW1 = English");
+	SSD1306_SetCursor(0,2);
+	SSD1306_OutString(" SW2 = Francais");
+	while(SW1 == 0 && SW2 == 0){} // while shoot and pause button is not pressed
+	if(SW2 == 1)
+	{mylanguagesetting = 1;	}
+	else{mylanguagesetting = 0;}
+       SSD1306_ClearBuffer();
+      SSD1306_DrawBMP(2, 62, SpaceInvadersMarquee, 0, SSD1306_WHITE);
+     SSD1306_OutBuffer();
+	
 while(1){ // Entire Program
+	
 	
 	Init(); // Initialize images
 	int count = 0;
+	
+	
 	
 	// Gameplay Loop of one round
 	while(lives > 0){ int shot,i; 
@@ -412,7 +427,10 @@ while(1){ // Entire Program
 		if(SW2 == 1){ // If pause button is pressed
 			SW2 = 0;
 			Sound_HighPitch();
-			SSD1306_OutString("Game Paused");
+			if(mylanguagesetting == 0)
+			{SSD1306_OutString("Game Paused");}
+			else
+			{SSD1306_OutString("Jeu en Pause");}
 			PB5 ^= 0x20;
 			while(SW2 == 0){NVIC_ST_CTRL_R=0;}
 			SW2 = 0;
@@ -443,15 +461,19 @@ while(1){ // Entire Program
 		SSD1306_OutBuffer();
 		SSD1306_OutClear();
 		SSD1306_SetCursor(0,0);
-		SSD1306_OutString("Game Over!");
+		if(mylanguage == 0){	SSD1306_OutString("Game Over!");}
+		else{	SSD1306_OutString("Jeu Termine!");}
 		SSD1306_SetCursor(0,1);
-		SSD1306_OutString("Your score:");
+		if(mylanguage == 0){	SSD1306_OutString("Your score:");}
+		else{	SSD1306_OutString("Tes Marque des points:");}
 	  SSD1306_SetCursor(11,1);
 		SSD1306_OutUDec(score);
 		SSD1306_SetCursor(0,3);
-		SSD1306_OutString("Press Fire to");
+		if(mylanguage == 0){SSD1306_OutString("Press Fire to:");}
+		else{SSD1306_OutString("Appuyez sur le bouton de tir:");}
 	  SSD1306_SetCursor(0,4);
-	  SSD1306_OutString("Play again");
+	   if(mylanguage == 0){SSD1306_OutString("Play Again!");}
+		else{SSD1306_OutString("Jouer de nouveau!");}
 	  score = 0;
 	
 	while(SW1 == 0){ // wait for new press
