@@ -1631,14 +1631,13 @@ const char *Phrases[3][2]={
   {Language_English,Language_French}
 };
 void SSD1306_OutPhrase(phrase_t message){
-for(phrase_t myPhrase=HELLO; myPhrase<= GOODBYE; myPhrase++){
+
     for(Language_t myL=English; myL<= French; myL++){
     	 SSD1306_OutString((char *)Phrases[LANGUAGE][myL]);
       SSD1306_OutChar(' ');
-    	 SSD1306_OutString((char *)Phrases[myPhrase][myL]);
       SSD1306_OutChar(13);
     }
-  }
+  
 
     l = 128;
     while(1){
