@@ -1616,3 +1616,41 @@ int ferror(FILE *f){
   /* Your implementation of ferror */
   return EOF;
 }
+typedef enum {English, Spanish, Portuguese, French} Language_t;
+Language_t myLanguage=English;
+typedef enum {HELLO, GOODBYE, LANGUAGE} phrase_t;
+const char Hello_English[] ="Hello";
+const char Hello_French[] ="All\x83";
+const char Goodbye_English[]="Goodbye";
+const char Goodbye_French[] = "Au revoir";
+const char Language_English[]="English";
+const char Language_French[]="Fran\x87" "ais";
+const char *Phrases[3][4]={
+  {Hello_English,Hello_French},
+  {Goodbye_English,Goodbye_French},
+  {Language_English,Language_French}
+};
+void SSD1306_OutPhrase(phrase_t message){
+for(phrase_t myPhrase=HELLO; myPhrase<= GOODBYE; myPhrase++){
+    for(Language_t myL=English; myL<= French; myL++){
+    	 SSD1306_OutString((char *)Phrases[LANGUAGE][myL]);
+      SSD1306_OutChar(' ');
+    	 SSD1306_OutString((char *)Phrases[myPhrase][myL]);
+      SSD1306_OutChar(13);
+    }
+  }
+
+    l = 128;
+    while(1){
+   	for(int i=0;i<8;i++){
+       SSD1306_SetCursor(0,i);
+  	  SSD1306_OutUDec(l);
+  	  SSD1306_OutChar(' ');
+  	  SSD1306_OutChar(l);
+        l++;
+    }
+  }  
+}
+
+
+  
