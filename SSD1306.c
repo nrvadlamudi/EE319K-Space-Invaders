@@ -1625,7 +1625,7 @@ const char Goodbye_English[]="Goodbye";
 const char Goodbye_French[] = "Au revoir";
 const char Language_English[]="English";
 const char Language_French[]="Fran\x87" "ais";
-const char *Phrases[3][4]={
+const char *Phrases[3][2]={
   {Hello_English,Hello_French},
   {Goodbye_English,Goodbye_French},
   {Language_English,Language_French}
