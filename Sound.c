@@ -1141,7 +1141,7 @@ const uint8_t highpitch[1802] = {
 
 // define a background task to run at 11 kHz, which outputs one value to DAC each interrupt
   uint32_t Length;
-const uint32_t SoundPt*;
+const uint32_t *SoundPt;
 
 void SoundTask(void){
 	if(Length == 0)	
