@@ -1616,7 +1616,7 @@ int ferror(FILE *f){
   /* Your implementation of ferror */
   return EOF;
 }
-typedef enum {English, Spanish, Portuguese, French} Language_t;
+typedef enum {English, French} Language_t;
 Language_t myLanguage=English;
 typedef enum {HELLO, GOODBYE, LANGUAGE} phrase_t;
 const char Hello_English[] ="Hello";
