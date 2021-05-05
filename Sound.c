@@ -6,8 +6,8 @@
 #include <stdint.h>
 #include "Sound.h"
 #include "DAC.h"
-#include "../inc/tm4c123g86pm.h"
-#include Timer0.h
+#include "../inc/tm4c123gh6pm.h"
+#include "Timer0.h"
 // these are sampled at 8 bits 11kHz
 // If your DAC is less than 8 bits you will need to scale the data
 const uint8_t shoot[4080] = {
