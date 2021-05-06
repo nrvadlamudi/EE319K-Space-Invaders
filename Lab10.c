@@ -469,9 +469,14 @@ while(1){ // Entire Program
 			}
 		}
 		random = Random();
+		int Invaderrand = 0;
+			 Invaderrand = Random()%3+1
 		if(random < MaxEnemies){ // generate enemy laser if random number generated an enemy designation
 			if(Enemies[random].life == alive){
 			ReturnFire(random);
+				if(Invaderrand == 1){Sound_Invader1();}
+				   if(Invaderrand == 2){Sound_Invader2();}
+				   if(Invaderrand == 3){Sound_Invader3();}
 			}
 		}
 		if(SW1 == 1){ // If the fire button is pressed
@@ -498,6 +503,7 @@ while(1){ // Entire Program
 		for(i=0;i<MaxEnemies;i++){
 			if(Enemies[i].life == dead){
 				count++;
+				Sound_Killed();
 			}
 		}
 		
