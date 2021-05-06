@@ -1132,5 +1132,8 @@ Sound_Start(shoot,4080);
 };
 
 void Sound_Explosion(void){Sound_Start(explosion,2000);};
+void Sound_Killed(void){Sound_Start(invaderkilled,3377);};
 void Sound_Invader1(void){Sound_Start(fastinvader1,982);};
+void Sound_Invader2(void){Sound_Start(fastinvader2,1042);};
+void Sound_Invader3(void){Sound_Start(fastinvader3,1054);};
 void Sound_HighPitch(void){Sound_Start(highpitch,1802);};
