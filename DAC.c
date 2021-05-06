@@ -27,7 +27,9 @@ void DAC_Init(void){
 	}
 	
 	GPIO_PORTB_DIR_R |= 0x0F; // make 0-3 outputs
+	GPIO_PORTB_AFSEL_R &= ~0x0F; // disable alt function
 	GPIO_PORTB_DEN_R |= 0x0F; // make 0-3 enabled
+	
 }
 
 // **************DAC_Out*********************
@@ -36,5 +38,5 @@ void DAC_Init(void){
 // Input=n is converted to n*3.3V/15
 // Output: none
 void DAC_Out(uint32_t data){
-	GPIO_PORTB_DATA_R = data; //output voltage to send to the DAC 
+	GPIO_PORTB_DATA_R = (GPIO_PORTB_DATA_R&0xFFF0) | (data&0x000F); //output voltage to send to the DAC 
 }

@@ -92,11 +92,36 @@ void Profile_Init(void){
 #define MaxEnemies 6
 #define MaxMissiles 20
 
-volatile uint8_t SW1,SW2;
+volatile uint8_t SW1,SW2,last = 0;
 void Delay100ms(uint32_t count); // time delay in 0.1 seconds
 uint32_t random;
-uint16_t score = 0;
+uint32_t score = 0;
 typedef enum {dead,alive} status_t; // Sets 0 to dead status and 1 to alive status
+typedef enum {English,Spanish} language_t; // Language select
+typedef enum {GameOver,Score,Restart1,Restart2,Paused} phrase_t;
+
+language_t selLanguage = English; // default selected language is English
+
+const char GameOver_English[] = "Game Over!";
+const char Score_English[] = "Your Score:";
+const char Restart1_English[] = "Press Fire to";
+const char Restart2_English[] = "play again";
+const char Paused_English[] = "Game Paused";
+
+const char GameOver_Spanish[] = "Juego Terminado!";
+const char Score_Spanish[] = "Su Puntaci\xA2""n";
+const char Restart1_Spanish[] = "Presione Disparar";
+const char Restart2_Spanish[] = "para reinciar";
+const char Paused_Spanish[] = "Jueago Pausado";
+
+const char *phrases [5][2] = {
+	{GameOver_English,GameOver_Spanish},
+	{Score_English,Score_Spanish},
+	{Restart1_English,Restart1_Spanish},
+	{Restart2_English,Restart2_Spanish},
+	{Paused_English,Paused_Spanish}
+};
+
 int8_t lives = 3; // 3 lives for player
 
 struct sprite { // sprite struct
@@ -179,14 +204,17 @@ void Draw(void){ int i;
 	
 	uint32_t x = 0;
 	for(i=0;i<lives;i++){ 
-		SSD1306_DrawBMP(x,60,Missile1,0,SSD1306_INVERSE);
+		SSD1306_DrawBMP(x,58,heart,0,SSD1306_INVERSE);
 		x += 4;
 	}
 	
-	LCD_OutDec(score);
+	
+	SSD1306_DrawUDec2(0,0,score,SSD1306_INVERSE);
+	
 	
 	SSD1306_OutBuffer();
 	NeedToDraw = 0;
+	
 }
 
 void Move(void){ int i,j; uint32_t adcData;
@@ -243,6 +271,7 @@ void Move(void){ int i,j; uint32_t adcData;
 					Enemies[j].life = dead;
 					Missiles[i].life = dead;
 					score += 10;
+					Sound_Explosion();
 				}
 			}	
 		 }			
@@ -281,6 +310,26 @@ void Move(void){ int i,j; uint32_t adcData;
 	}
 
 }
+//Output score by converting to string
+void SSD1306_DrawUDec2(int16_t x, int16_t y, uint32_t n, uint16_t color){
+char buf[4];
+if(n>=1000){
+buf[0] = '*'; /* illegal */
+buf[1] = '*'; /* illegal */
+buf[2] = '*'; // illegal
+}else{
+if(n>=100){
+buf[0]= n/100+'0'; /* hundreds digit */
+buf[1] = (n%100)/10+'0'; /* tens digit */
+buf[2] = '0'; // ones digit is always 0
+}else{
+buf[0]=n/10+'0'; // tens digit
+buf[1] ='0'; /* ones digit */
+}
+}
+buf[3]=0; // null
+SSD1306_DrawString(x,y,buf,color);
+}
 
 void CreateMissile (void){ int i = 0;
 	while(Missiles[i].life == alive){ // find next dead missile
@@ -302,6 +351,7 @@ void ReturnFire (uint32_t enemy){int i; int count = 0;
 		eLasers[enemy].life = alive;
 		eLasers[enemy].x = Enemies[enemy].x + 6;
 		eLasers[enemy].y = Enemies[enemy].y + 4;
+		//Sound_Invader1();
 	}
 }
 
@@ -363,6 +413,7 @@ int main(void){
   SSD1306_OutClear();
 	ADC_Init(5);
 	Button_Init();
+	Sound_Init();
 	SysTick_Init(4000000); // 20 Hz Interrupt
   Random_Init(42);
   Profile_Init(); // PB5,PB4,PF3,PF2,PF1 
@@ -370,8 +421,39 @@ int main(void){
   SSD1306_DrawBMP(2, 62, SpaceInvadersMarquee, 0, SSD1306_WHITE);
   SSD1306_OutBuffer();
   EnableInterrupts();
-	while(SW1 == 0){} // while shoot button is not pressed
-
+	while(SW1 == 0){} // while shoot button is not pressed, stay on banner
+	
+		SW1 = 0;
+	
+	SSD1306_ClearBuffer();
+	SSD1306_OutBuffer();
+	SSD1306_SetCursor(0,0);
+	SSD1306_OutString("English");
+	SSD1306_SetCursor(0,10);
+	SSD1306_OutString(" < ");
+	SSD1306_SetCursor(0,1);
+	SSD1306_OutString("Espa\xA4ol");
+	
+	uint8_t line = 0;	
+	while(SW1 == 0){ // language select
+			if(SW2 == 1){ 
+				SW2 = 0;
+				selLanguage ^= 1; // toggle language
+				line ^= 1;
+				SSD1306_ClearBuffer();
+				SSD1306_OutBuffer();
+				SSD1306_SetCursor(0,0);
+				SSD1306_OutString("English");
+				SSD1306_SetCursor(0,1);
+				SSD1306_OutString("Espa\xA4ol");
+				SSD1306_SetCursor(10,line);
+				SSD1306_OutString(" < ");
+			}
+			
+	}
+	
+	SW1 = 0;
+	
 while(1){ // Entire Program
 	
 	Init(); // Initialize images
@@ -397,12 +479,17 @@ while(1){ // Entire Program
 			PB4 ^= 0x10; // Flash LED
 			shot = 1;
 			CreateMissile();
+			Sound_Shoot();
+			last = GPIO_PORTC_DATA_R&0x0010;
 		}
 		if(SW2 == 1){ // If pause button is pressed
 			SW2 = 0;
-			SSD1306_OutString("Game Paused");
+			Sound_HighPitch();
+			SSD1306_SetCursor(4,0);
+			SSD1306_OutString((char *)phrases[Paused][selLanguage]);
 			PB5 ^= 0x20;
 			while(SW2 == 0){NVIC_ST_CTRL_R=0;}
+			Sound_HighPitch();
 			SW2 = 0;
 			PB5 ^= 0x20;
 			NVIC_ST_CTRL_R = 0x07;
@@ -423,20 +510,21 @@ while(1){ // Entire Program
 	}
 		
 	// Game Over Screen
+		Sound_Explosion();
 		NVIC_ST_CTRL_R = 0;
 		SSD1306_ClearBuffer();
 		SSD1306_OutBuffer();
 		SSD1306_OutClear();
 		SSD1306_SetCursor(0,0);
-		SSD1306_OutString("Game Over!");
+		SSD1306_OutString((char *)phrases[GameOver][selLanguage]);
 		SSD1306_SetCursor(0,1);
-		SSD1306_OutString("Your score:");
-	  SSD1306_SetCursor(11,1);
+		SSD1306_OutString((char *)phrases[Score][selLanguage]);
+	  SSD1306_SetCursor(14,1);
 		SSD1306_OutUDec(score);
 		SSD1306_SetCursor(0,3);
-		SSD1306_OutString("Press Fire to");
+		SSD1306_OutString((char *)phrases[Restart1][selLanguage]);
 	  SSD1306_SetCursor(0,4);
-	  SSD1306_OutString("Play again");
+	  SSD1306_OutString((char *)phrases[Restart2][selLanguage]);
 	  score = 0;
 	
 	while(SW1 == 0){ // wait for new press

@@ -11,7 +11,7 @@
 #define _Main_h
 #include <stdint.h>
 
-extern volatile uint8_t SW1, SW2;
+extern volatile uint8_t SW1, SW2, last;
 // Header files contain the prototypes for public functions 
 
 void SysTick_Init(uint32_t period); // Systick initialization
@@ -23,5 +23,7 @@ void Move(void); // Enemy movement function
 void Draw(void); // Draw enemies out function
 // this file explains what the module does
 void CreateMissile(void); // Draw missiles when fired
+
+void SSD1306_DrawUDec2(int16_t x, int16_t y, uint32_t n, uint16_t color); // Function to output score
 
 #endif

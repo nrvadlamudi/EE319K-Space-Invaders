@@ -7,7 +7,7 @@
 #ifndef _Sound_h
 #define _Sound_h
 #include <stdint.h>
-void SoundTask(void);
+
 // Header files contain the prototypes for public functions 
 // this file explains what the module does
 void Sound_Init(void);
@@ -20,15 +20,18 @@ void Sound_Init(void);
 //        count is the length of the array
 // Output: none
 // special cases: as you wish to implement
-void Sound_Start(const uint8_t *pt, uint32_t count);
-void Sound_Shoot(void);
-void Sound_Killed(void);
+void Sound_Play(const uint8_t *pt, uint32_t count);
+
+
 void Sound_Explosion(void);
+
 void Sound_Invader1(void);
-void Sound_Invader2(void);
-void Sound_Invader3(void);
-void Sound_Invader4(void);
+
 void Sound_HighPitch(void);
+
+void Sound_Shoot(void);
+
+void Sound_Task(void);
 
 #endif
 

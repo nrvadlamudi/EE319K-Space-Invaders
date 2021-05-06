@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
 #include "main.h"
+#include "Switch.h"
 // Code files contain the actual implemenation for public functions
 // this file also contains an private functions and private data
 
@@ -57,10 +58,15 @@ void Button_Init(void){
 
 void GPIOPortC_Handler(void){
 	GPIO_PORTC_ICR_R = 0x10; // acknowledge flag
+	if(last == 0){
 	SW2 = 1; // Signal SW2 for pause and language has occured
+	}
 }
 
 void GPIOPortE_Handler(void){
 	GPIO_PORTE_ICR_R = 0x10; // acknowledge flag
 	SW1 = 1; // Signal SW1 for start and shoot has occured
 }
+
+
+
